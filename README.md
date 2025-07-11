@@ -64,13 +64,6 @@ Break-Free Athletics offers intuitive tools for team and individual management. 
 - Access highlights for top athletes.
 - Manage schedules, track stats, and connect directly with colleges and recruiters.
 
-## Contributions
-The contributors of this project are Kate Lautenbach, Emily Wang, Sophia Guerra, Noah Burra, and Rishona Israel. All team members contributed equally to the database design and conceptual development. Once progressing to the building phase, Emily and Sophia worked on creating all the blueprints and routes needed. For the UI, Kate worked on the Athletic Director pages, Emily worked on the Recruiter pages, Noah worked on the Athlete pages, and Rishona worked on the coach pages. Sophia did the home and navigation bar UI. After ensuring both the back and front ends were up and running, Emily worked on the UI and made sure the website was aesthetically pleasing. All team members were involved in debugging and resolving any conflicts. 
 
 ## Further Steps
 In the future, we would like to implement more tools for our users that would streamline activity. For example, we would add contact information for all users that would allow easy access and communication. Additionally, we could have a messaging tool that allows users to directly send and receive messages between users. 
-
-## Presentation
-We prepared a [presentation](https://www.dropbox.com/scl/fo/xvq8gjvm8a2n3lc9ml2gi/AP33HnSugcZutj0y65PSgg8?rlkey=8w2u382ak0v0r93ub030069x7&st=u8jkzieq&dl=0 
-) that goes through the user pages and functions. 
-

@@ -1,90 +1,151 @@
-# HMS Sports Project Repository
+# HMS Sports App
 
-## Description
-
-An all-in-one database for a high school sports team that allows streamlined activity for its users. Because our app is focused on our specific user stories and personas, some aspects of the code are "hard-coded" to display only results that pertain to them.
+Database-driven web application for managing high school athletic programs. Built with Flask API, Streamlit frontend, and MySQL.
 
 ## Features
 
-This repo contains features for four archetypical users: Coach, Athlete, Recruiter, and Athletic Director. We use Role-Based Access Control to specify certain abilities and access. Here are the tools created for their use:
+**User Roles:**
+- **Coach**: View strategies, schedules
+- **Athlete**: Manage stats, view schedules, track recruitment  
+- **Recruiter**: Search players by criteria (GPA, position, state), view rosters, schedule events
+- **Athletic Director**: Manage teams, coaches, practices
 
-* **Coach Features:** Schedule viewing (games and practices), strategy viewing (all strategies registered with the team).
-* **Recruiter Features:** Search for players that meet their recruitment requirements (has access to academic and athletic stats).
-* **Athlete Features:** Stats management (can view or update), can view schedules (games, practices, and recruitment events), recruitment profile (includes highlight reels and scholarship guidance).
-* **Athletic Director Tools:** View all teams they manage (with roster and coach info), practice management (can view all practices and their info, and can add or delete practices).
-* **App Features:** Clear buttons on how to access tools, navigation sidebar that lets the user log out and go back to the previous page.
+## Tech Stack
 
-## Built With
+**Backend:**
+- Flask + Flask-Login, Flask-MySQL
+- Python + python-dotenv, cryptography
+- 6 Blueprint modules organizing routes
 
-* werkzeug
-* flask
-* flask-login
-* flask-mysql
-* cryptography
-* python-dotenv
-* pandas
-* streamlit
-* requests
-* validators
+**Frontend:**
+- Streamlit (20+ pages)
+- Pandas for data handling
+- HTTP requests to API
 
-## Prerequisites
+**Database:**
+- MySQL (13 normalized tables, 250 athletes, 40 coaches)
+- Docker Compose orchestration
 
-* A GitHub account.
-* A terminal-based Git client or GUI Git client such as GitHub Desktop or the Git plugin for VS Code.
-* VS Code with the Python extension.
-* A distribution of Python running on your laptop. The distribution supported by the course is Anaconda or Miniconda.
+## SQL Skills
 
-## Installation
+**Database Design:**
+- Normalized schema with foreign keys
+- Junction tables for many-to-many relationships (AthleteEvent, AthleteRecruiter, etc.)
 
-Clone your forked version of this repository:
+**Query Types Implemented:**
+- Multi-table JOINs for player stats and team info
+- Parameterized queries to prevent SQL injection
+- WHERE clauses with IN operators for multi-criteria filtering
+- INSERT/UPDATE/DELETE with transactions
+- ORDER BY for event sequencing
+- Conflict detection queries for schedule management
 
-1. Clone the project:
+**Example Queries:**
 
-   * In GitHub: **Code > SSH > Copy**
-   * In the terminal:
+Player search across multiple tables:
+```sql
+SELECT a.FirstName, a.LastName, a.Position, s.TotalPoints, s.PointsPerGame,
+       t.TeamName
+FROM Athlete a 
+JOIN AthleteStats s ON a.PlayerID = s.PlayerID
+JOIN Team t ON a.TeamID = t.TeamID
+WHERE a.FirstName = %s AND a.LastName = %s
+```
 
-     * `git clone <paste URL>`
+Multi-criteria player filtering:
+```sql
+SELECT a.FirstName, a.LastName, a.Position, a.GPA, t.State
+FROM Athlete a 
+JOIN Team t ON a.TeamID = t.TeamID
+WHERE a.Gender = 'Male' AND t.State IN %s AND a.GPA > %s AND a.Position IN %s
+```
 
-2. Set up the `.env` file in the `api` folder using `.env.template`.
+Athletic Director practice view with team info:
+```sql
+SELECT p.PracticeID, p.DateTime, p.Location, t.TeamName
+FROM Practice p 
+JOIN Team t ON t.TeamID = p.TeamID 
+WHERE t.DirectorID = 131
+ORDER BY p.DateTime ASC
+```
 
-   * Enter a new passcode.
+## Setup
 
-3. Install dependencies from the `requirements.txt` files:
+```bash
+# Clone repo
+git clone <URL>
+cd HMS-Sports-App-main
 
-   * For the API folder:
+# Configure environment
+cd api
+cp .env.template .env
+# Edit .env with DB credentials
 
-     * `pip install -r ./api/requirements.txt`
-   * For the app folder:
+# Install dependencies
+pip install -r ./api/requirements.txt
+pip install -r ./app/requirements.txt
 
-     * `pip install -r ./app/requirements.txt`
+# Start services
+docker compose up -d
 
-4. Use Docker to start the services:
+# Access
+# Frontend: http://localhost:8501
+# API: http://localhost:4000
+# DB: localhost:3200
+```
 
-   * `docker compose up -d`
+## API Endpoints
 
-5. To stop and restart containers when updating the backend:
+**Recruiter Search** (`/r` prefix):
+- `GET /recruiter/player_criteria?State=FL&GPA=3.5&Position=Guard` - Search by criteria
+- `GET /recruiter/player_stats?first_name=Troy&last_name=Bolton` - Get stats
+- `GET /recruiter/roster?team=Wildcats` - View roster
+- `GET /recruiter/state_teams?state=Florida` - Teams by state
+- `POST /recruiter/event` - Schedule recruiting event
+- `DELETE /recruiter/event?EventID=1` - Cancel event
 
-   * `docker compose down`
-   * `docker compose up -d`
+**Athletic Director** (`/d` prefix):
+- `GET /athletic_director/teams` - Managed teams
+- `GET /athletic_director/practices` - View practices
+- `POST /athletic_director/practices` - Schedule practice
+- `DELETE /athletic_director/practices?PracticeID=1` - Cancel practice
 
-6. Create a new data source in DataGrip and connect to the database (used for testing queries and updating the database):
+**Athlete Stats** (`/s` prefix):
+- `GET /athletestats` - All stats
+- `GET /athletestats/<id>` - Specific stats
+- `PUT /athletestats/<id>` - Update stats
 
-   * Create a new project.
-   * Name it **project repo**.
-   * Change the port to **3200**.
-   * Username: **root**.
-   * Enter the password from the `.env` file.
-   * Test the connection.
+**Calendar** (`/cal` prefix):
+- `GET /calendar/practices` - Team practices
+- `GET /calendar/games` - Team games  
+- `GET /calendar/recruitingevents` - Recruiting events
 
-## Usage
+**Players** (`/a` prefix):
+- `GET /players` - All athletes
+- `GET /players/<id>` - Player info
+- `GET /players/schoolsofinterest` - Target schools
+- `DELETE /players/schoolsofinterest` - Remove school
 
-This athletics management platform offers intuitive tools for team and individual management. Users can:
+## Database Schema
 
-* Log in to access role-specific dashboards (e.g., coach tools, recruiter search).
-* Create player profiles with academic and athletic achievements.
-* Access highlights for top athletes.
-* Manage schedules, track stats, and connect directly with colleges and recruiters.
+13 tables:
+- **Users**: Coach, AthleticDirector, Recruiter
+- **Teams**: Team, Strategies, CollegeTeam  
+- **Athletes**: Athlete, AthleteStats
+- **Events**: Game, Practice, RecruitingEvents
+- **Recruitment**: SchoolsOfInterest
+- **Associations**: AthleteEvent, AthleteRecruiter, AthleteInterestedSchools
 
-## Further Steps
+Foreign keys maintain referential integrity. 900+ line SQL seed with 250 athletes, 40 coaches, 20 directors.
 
-In the future, we would like to implement more tools for our users that would further streamline activity. For example, we would add contact information for all users that would allow easy access and communication. Additionally, we could have a messaging tool that allows users to directly send and receive messages between users.
+## Architecture
+
+```
+Streamlit Frontend
+        ↓ HTTP/REST
+Flask API (6 Blueprints)
+        ↓ SQL
+MySQL Database
+```
+
+Docker Compose runs all 3 services in separate containers with hot reloading.

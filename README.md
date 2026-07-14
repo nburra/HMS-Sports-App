@@ -78,7 +78,7 @@ Clone your forked version of this repository:
 
 ## Usage
 
-Break-Free Athletics offers intuitive tools for team and individual management. Users can:
+This athletics management platform offers intuitive tools for team and individual management. Users can:
 
 * Log in to access role-specific dashboards (e.g., coach tools, recruiter search).
 * Create player profiles with academic and athletic achievements.
